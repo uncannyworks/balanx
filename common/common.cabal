@@ -1,0 +1,61 @@
+name:                common
+version:             0.0.1.0
+synopsis:            Booker Common
+description:         Please see README.md
+homepage:            https://github.com/boj/booker#readme
+license:             Apache
+license-file:        LICENSE
+author:              Brian Jones
+maintainer:          brian.jones@uncannyworks.com
+copyright:           Brian Jones
+category:            AI
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Shared
+                     , Uncanny.Prelude
+                     , User.Json
+                     , User.Types
+
+  if impl(ghcjs)
+    build-depends:       aeson
+                       , base
+                       , bytestring
+                       , containers
+                       , data-default
+                       , email-validate
+                       , exceptions
+                       , lens
+                       , mtl
+                       , reflex
+                       , reflex-dom
+                       , safe
+                       , string-conv
+                       , tagged
+                       , text
+                       , time
+                       , transformers
+  else
+    build-depends:       aeson
+                       , base
+                       , bytestring
+                       , containers
+                       , data-default
+                       , email-validate
+                       , exceptions
+                       , lens
+                       , mtl
+                       , safe
+                       , servant-server
+                       , string-conv
+                       , tagged
+                       , text
+                       , tisch
+                       , time
+                       , transformers
+  default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude
+                     , OverloadedStrings

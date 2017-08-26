@@ -1,0 +1,67 @@
+name:                server
+version:             0.0.1.0
+synopsis:            Balanx Server
+description:         Please see README.md
+homepage:            https://github.com/uncannyworks/balanx#readme
+license:             Apache
+license-file:        LICENSE
+author:              Brian Jones
+maintainer:          brian@uncannyworks.com
+copyright:           Uncanny Works
+category:            AI
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     App
+                     -- api
+                     , Api.AuthApi
+                     , Api.UserApi
+                     -- database
+                     , Database.User
+                     -- support
+                     , Logger
+                     , Session
+                     , Types
+  build-depends:       common
+                     , base
+                     , bytestring
+                     , cereal
+                     , containers
+                     , cryptonite
+                     , exceptions
+                     , lens
+                     , logging-effect
+                     , mtl
+                     , opaleye
+                     , postgresql-simple
+                     , profunctors
+                     , product-profunctors
+                     , resource-pool
+                     , safe
+                     , scrypt
+                     , servant-auth-cookie
+                     , servant-server
+                     , text
+                     , tisch
+                     , time
+                     , transformers
+                     , uuid
+                     , wai
+                     , wai-cors
+                     , warp
+                     , wl-pprint-text
+  default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude
+                     , OverloadedStrings
+
+executable balanx-server
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , server
+  default-language:    Haskell2010
+  default-extensions:  OverloadedStrings
