@@ -2,12 +2,12 @@ name:                common
 version:             0.0.1.0
 synopsis:            Booker Common
 description:         Please see README.md
-homepage:            https://github.com/boj/booker#readme
+homepage:            https://github.com/uncannyworks/balanx#readme
 license:             Apache
 license-file:        LICENSE
 author:              Brian Jones
-maintainer:          brian.jones@uncannyworks.com
-copyright:           Brian Jones
+maintainer:          brian@uncannyworks.com
+copyright:           Uncanny Works
 category:            AI
 build-type:          Simple
 extra-source-files:  README.md
