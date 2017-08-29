@@ -37,14 +37,15 @@ type instance Database TUser   = Db1
 type instance SchemaName TUser = "public"
 type instance TableName TUser  = "users"
 type instance Columns TUser =
-  [ 'Column "user_id"   'WD 'R  PGInt4        UserId
-  , 'Column "username"  'W  'R  PGText        Username
-  , 'Column "password"  'W  'R  PGBytea       PasswordE
-  , 'Column "email"     'W  'R  PGText        Email
-  , 'Column "verify_t"  'W  'R  PGText        Token
-  , 'Column "verified"  'WD 'R  PGBool        Bool
-  , 'Column "created"   'WD 'R  PGTimestamptz UTCTime
-  , 'Column "logged_in" 'WD 'R  PGTimestamptz UTCTime
+  [ 'Column "user_id"     'WD 'R  PGInt4        UserId
+  , 'Column "username"    'W  'R  PGText        Username
+  , 'Column "password"    'W  'R  PGBytea       PasswordE
+  , 'Column "email"       'W  'R  PGText        Email
+  , 'Column "permissions" 'WD 'R  PGInt4        Permissions
+  , 'Column "verify_t"    'W  'R  PGText        Token
+  , 'Column "verified"    'WD 'R  PGBool        Bool
+  , 'Column "created"     'WD 'R  PGTimestamptz UTCTime
+  , 'Column "logged_in"   'WD 'R  PGTimestamptz UTCTime
   ]
 
 hsRToUserR :: HsR TUser -> UserR
@@ -53,6 +54,7 @@ hsRToUserR u = UserR
   (view #username u)
   (view #password u)
   (view #email u)
+  (view #permissions u)
   (view #verified u)
   (view #created u)
   (view #logged_in u)
@@ -60,14 +62,15 @@ hsRToUserR u = UserR
 userWToHsI :: PasswordE -> Token -> UserW -> HsI TUser
 userWToHsI p t u =
   mkHsI TUser
-    (hsi #user_id   WDef)
-    (hsi #username  (u ^. uwUsername))
-    (hsi #password  p)
-    (hsi #email     (u ^. uwEmail))
-    (hsi #verify_t  t)
-    (hsi #verified  WDef)
-    (hsi #created   WDef)
-    (hsi #logged_in WDef)
+    (hsi #user_id     WDef)
+    (hsi #username    (u ^. uwUsername))
+    (hsi #password    p)
+    (hsi #email       (u ^. uwEmail))
+    (hsi #permissions WDef)
+    (hsi #verify_t    t)
+    (hsi #verified    WDef)
+    (hsi #created     WDef)
+    (hsi #logged_in   WDef)
 
 encryptPassword :: MonadIO m => Password -> m PasswordE
 encryptPassword p = do

@@ -43,25 +43,27 @@ validateEmail _ = Right Nothing
 
 data UserR
   = UserR
-  { _urUserId   :: UserId
-  , _urUsername :: Username
-  , _urPassword :: PasswordE
-  , _urEmail    :: Email
-  , _urVerified :: Bool
-  , _urCreated  :: UTCTime
-  , _urLoggedIn :: UTCTime
+  { _urUserId      :: UserId
+  , _urUsername    :: Username
+  , _urPassword    :: PasswordE
+  , _urEmail       :: Email
+  , _urPermissions :: Permissions
+  , _urVerified    :: Bool
+  , _urCreated     :: UTCTime
+  , _urLoggedIn    :: UTCTime
   } deriving (Show, Eq)
 
 makeLenses ''UserR
 
 instance ToJSON UserR where
   toJSON u =
-    object [ "user_id"   .= (u ^. urUserId)
-           , "username"  .= (u ^. urUsername)
-           , "email"     .= (u ^. urEmail)
-           , "verified"  .= (u ^. urVerified)
-           , "created"   .= (u ^. urCreated)
-           , "logged_in" .= (u ^. urLoggedIn)
+    object [ "user_id"     .= (u ^. urUserId)
+           , "username"    .= (u ^. urUsername)
+           , "email"       .= (u ^. urEmail)
+           , "permissions" .= (u ^. urPermissions)
+           , "verified"    .= (u ^. urVerified)
+           , "created"     .= (u ^. urCreated)
+           , "logged_in"   .= (u ^. urLoggedIn)
            ]
 
 instance FromJSON UserR where
@@ -70,6 +72,7 @@ instance FromJSON UserR where
     <*> v .: "username"
     <*> (pure . mkPasswordE $ "")
     <*> v .: "email"
+    <*> v .: "permissions"
     <*> v .: "verified"
     <*> v .: "created"
     <*> v .: "logged_in"

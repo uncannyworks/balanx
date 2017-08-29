@@ -15,6 +15,8 @@ module User.Types
   , mkEmail
   , Username
   , mkUsername
+  , Permissions
+  , mkPermissions
   , Token
   , mkToken
   , Password
@@ -82,6 +84,20 @@ instance QueryRunnerColumnDefault PGText Username where
   queryRunnerColumnDefault = qrcWrapped
 #endif
 
+data PermissionsTag
+type Permissions = Tagged PermissionsTag Int32
+
+mkPermissions :: Int32 -> Permissions
+mkPermissions = Tagged
+
+#ifndef __GHCJS__
+instance PgTyped Permissions where
+  type PgType Permissions = PGInt4
+instance PgEq Permissions
+instance QueryRunnerColumnDefault PGInt4 Permissions where
+  queryRunnerColumnDefault = qrcWrapped
+#endif
+
 data TokenTag
 type Token = Tagged TokenTag Text
 
@@ -118,3 +134,24 @@ instance QueryRunnerColumnDefault PGBytea PasswordE where
   queryRunnerColumnDefault = qrcWrapped
 #endif
 
+data UserPermission
+  = NotSet
+  | Disabled
+  | Member
+  | Admin
+  deriving (Eq, Ord)
+
+instance Enum UserPermission where
+  toEnum 1 = NotSet
+  toEnum 2 = Disabled
+  toEnum 4 = Member
+  toEnum 8 = Admin
+  toEnum _ = NotSet
+  fromEnum NotSet   = 1
+  fromEnum Disabled = 2
+  fromEnum Member   = 4
+  fromEnum Admin    = 8
+
+instance Bounded UserPermission where
+  minBound = NotSet
+  maxBound = Admin
