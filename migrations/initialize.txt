@@ -1,0 +1,70 @@
+Description: Initialize Database
+Created: 2017-08-26 07:12:57.157810475 UTC
+Depends: 
+Apply: |
+  CREATE TABLE users
+    ( user_id     SERIAL      PRIMARY KEY
+    , username    VARCHAR     NOT NULL
+    , password    BYTEA       NOT NULL
+    , email       VARCHAR     NOT NULL
+    , permissions INTEGER     DEFAULT 1
+    , verify_t    VARCHAR     NOT NULL
+    , verified    BOOL        DEFAULT FALSE
+    , created     TIMESTAMPTZ DEFAULT now()
+    , updated     TIMESTAMPTZ DEFAULT now()
+    );
+  CREATE UNIQUE INDEX users_user_id_idx ON users (user_id);
+  CREATE UNIQUE INDEX users_username_idx ON users (username);
+  CREATE UNIQUE INDEX users_email_idx ON users (email);
+  CREATE UNIQUE INDEX users_verify_t_idx ON users (verifty_t);
+
+  CREATE TABLE user_channels
+    ( user_id     INTEGER REFERENCES users (user_id)
+    , channel_id  INTEGER REFERENCES channels (channel_id)
+    , permissions INTEGER DEFAULT 1
+    , PRIMARY KEY (user_id, channel_id)
+    );
+  CREATE UNIQUE INDEX user_channels_idx ON user_channels (user_id, channel_id);
+
+  CREATE TABLE channels
+    ( channel_id SERIAL      PRIMARY KEY
+    , name       VARCHAR     NOT NULL
+    , access     INTEGER     DEFAULT 1
+    , kind       INTEGER     DEFAULT 1
+    , creator_id INTEGER     NOT NULL REFERENCES users (user_id)
+    , created    TIMESTAMPTZ DEFAULT now()
+    , updated    TIMESTAMPTZ DEFAULT now()
+    );
+  CREATE UNIQUE INDEX channels_channel_id_idx ON channels (channel_id);
+
+  CREATE TABLE messages
+    ( message_id SERIAL      PRIMARY KEY
+    , parent_id  INTEGER     NOT NULL REFERENCES messages (message_id)
+    , channel_id INTEGER     NOT NULL REFERENCES channels (channel_id)
+    , creator_id INTEGER     NOT NULL REFERENCES users (user_id)
+    , title      VARCHAR     NOT NULL
+    , message    VARCHAR     NOT NULL
+    , kind       INTEGER     DEFAULT 1
+    , created    TIMESTAMPTZ DEFAULT now()
+    , updated    TIMESTAMPTZ DEFAULT now()
+    );
+  CREATE UNIQUE INDEX messages_message_id_idx ON message (message_id);
+  CREATE UNIQUE INDEX messages_channel_id_idx ON message (channel_id);
+  CREATE UNIQUE INDEX messages_creator_id_idx ON message (creator_id);
+Revert: |
+  DROP TABLE users;
+  DROP INDEX users_user_id_idx;
+  DROP INDEX users_username_idx;
+  DROP INDEX users_email_idx;
+  DROP INDEX users_verify_t_idx;
+
+  DROP TABLE user_channels;
+  DROP INDEX user_channels_idx;
+
+  DROP TABLE channels;
+  DROP INDEX channels_channel_id_idx;
+
+  DROP TABLE messages;
+  DROP INDEX messages_message_id_idx;
+  DROP INDEX messages_channel_id_idx;
+  DROP INDEX messages_creator_id_idx;
