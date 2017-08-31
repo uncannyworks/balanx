@@ -39,7 +39,7 @@ Apply: |
 
   CREATE TABLE messages
     ( message_id SERIAL      PRIMARY KEY
-    , parent_id  INTEGER     NOT NULL REFERENCES messages (message_id)
+    , parent_id  INTEGER     REFERENCES messages (message_id)
     , channel_id INTEGER     NOT NULL REFERENCES channels (channel_id)
     , creator_id INTEGER     NOT NULL REFERENCES users (user_id)
     , title      VARCHAR     NOT NULL
