@@ -15,8 +15,6 @@ module User.Types
   , mkEmail
   , Username
   , mkUsername
-  , Permissions
-  , mkPermissions
   , Token
   , mkToken
   , Password
@@ -81,20 +79,6 @@ instance PgTyped Username where
   type PgType Username = PGText
 instance PgEq Username
 instance QueryRunnerColumnDefault PGText Username where
-  queryRunnerColumnDefault = qrcWrapped
-#endif
-
-data PermissionsTag
-type Permissions = Tagged PermissionsTag Int32
-
-mkPermissions :: Int32 -> Permissions
-mkPermissions = Tagged
-
-#ifndef __GHCJS__
-instance PgTyped Permissions where
-  type PgType Permissions = PGInt4
-instance PgEq Permissions
-instance QueryRunnerColumnDefault PGInt4 Permissions where
   queryRunnerColumnDefault = qrcWrapped
 #endif
 

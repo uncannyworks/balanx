@@ -11,6 +11,7 @@ import Data.Text.Encoding (encodeUtf8)
 import Data.Time.Clock (UTCTime)
 import Text.Email.Validate
 
+import Common.Types
 import Shared
 import Uncanny.Prelude
 import User.Types
@@ -49,8 +50,8 @@ data UserR
   , _urEmail       :: Email
   , _urPermissions :: Permissions
   , _urVerified    :: Bool
-  , _urCreated     :: UTCTime
-  , _urLoggedIn    :: UTCTime
+  , _urCreated     :: Created
+  , _urUpdated     :: Updated
   } deriving (Show, Eq)
 
 makeLenses ''UserR
@@ -63,7 +64,7 @@ instance ToJSON UserR where
            , "permissions" .= (u ^. urPermissions)
            , "verified"    .= (u ^. urVerified)
            , "created"     .= (u ^. urCreated)
-           , "logged_in"   .= (u ^. urLoggedIn)
+           , "updated"     .= (u ^. urUpdated)
            ]
 
 instance FromJSON UserR where
@@ -75,7 +76,7 @@ instance FromJSON UserR where
     <*> v .: "permissions"
     <*> v .: "verified"
     <*> v .: "created"
-    <*> v .: "logged_in"
+    <*> v .: "updated"
   parseJSON _ = mzero
 
 data UserW

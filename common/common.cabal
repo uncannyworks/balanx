@@ -1,6 +1,6 @@
 name:                common
 version:             0.0.1.0
-synopsis:            Booker Common
+synopsis:            Balanx Common
 description:         Please see README.md
 homepage:            https://github.com/uncannyworks/balanx#readme
 license:             Apache
@@ -18,6 +18,10 @@ library
   exposed-modules:     Shared
                      , Uncanny.BitMask
                      , Uncanny.Prelude
+                     -- data types
+                     , Channel.Types
+                     , Common.Types
+                     , Message.Types
                      , User.Json
                      , User.Types
 

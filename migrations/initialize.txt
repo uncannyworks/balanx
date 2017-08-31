@@ -29,6 +29,7 @@ Apply: |
   CREATE TABLE channels
     ( channel_id SERIAL      PRIMARY KEY
     , name       VARCHAR     NOT NULL
+    , title      VARCHAR     NULL
     , access     INTEGER     DEFAULT 1
     , kind       INTEGER     DEFAULT 1
     , creator_id INTEGER     NOT NULL REFERENCES users (user_id)

@@ -25,6 +25,7 @@ import Data.UUID (toText)
 import Data.UUID.V4 (nextRandom)
 import Tisch
 
+import Common.Types
 import Shared
 import Uncanny.Prelude
 import User.Json
@@ -44,8 +45,8 @@ type instance Columns TUser =
   , 'Column "permissions" 'WD 'R  PGInt4        Permissions
   , 'Column "verify_t"    'W  'R  PGText        Token
   , 'Column "verified"    'WD 'R  PGBool        Bool
-  , 'Column "created"     'WD 'R  PGTimestamptz UTCTime
-  , 'Column "logged_in"   'WD 'R  PGTimestamptz UTCTime
+  , 'Column "created"     'WD 'R  PGTimestamptz Created
+  , 'Column "updated"     'WD 'R  PGTimestamptz Updated
   ]
 
 hsRToUserR :: HsR TUser -> UserR
@@ -57,7 +58,7 @@ hsRToUserR u = UserR
   (view #permissions u)
   (view #verified u)
   (view #created u)
-  (view #logged_in u)
+  (view #updated u)
 
 userWToHsI :: PasswordE -> Token -> UserW -> HsI TUser
 userWToHsI p t u =
@@ -70,7 +71,7 @@ userWToHsI p t u =
     (hsi #verify_t    t)
     (hsi #verified    WDef)
     (hsi #created     WDef)
-    (hsi #logged_in   WDef)
+    (hsi #updated     WDef)
 
 encryptPassword :: MonadIO m => Password -> m PasswordE
 encryptPassword p = do
