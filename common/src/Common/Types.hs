@@ -9,7 +9,9 @@
 #-}
 
 module Common.Types
-  ( Created
+  ( ChannelId
+  , mkChannelId
+  , Created
   , mkCreated
   , CreatorId
   , mkCreatorId
@@ -29,6 +31,20 @@ import Tisch
 #endif
 
 import Uncanny.Prelude
+
+data ChannelIdTag
+type ChannelId = Tagged ChannelIdTag Int32
+
+mkChannelId :: Int32 -> ChannelId
+mkChannelId = Tagged
+
+#ifndef __GHCJS__
+instance PgTyped ChannelId where
+  type PgType ChannelId = PGInt4
+instance PgEq ChannelId
+instance QueryRunnerColumnDefault PGInt4 ChannelId where
+  queryRunnerColumnDefault = qrcWrapped
+#endif
 
 data CreatedTag
 type Created = Tagged CreatedTag UTCTime

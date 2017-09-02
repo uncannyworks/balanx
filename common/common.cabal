@@ -19,8 +19,10 @@ library
                      , Uncanny.BitMask
                      , Uncanny.Prelude
                      -- data types
+                     , Channel.Json
                      , Channel.Types
                      , Common.Types
+                     , Message.Json
                      , Message.Types
                      , User.Json
                      , User.Types

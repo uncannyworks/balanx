@@ -5,34 +5,15 @@ module User.Json where
 import Control.Lens hiding ((.=))
 import Control.Monad (fail, mzero)
 import Data.Aeson
-import Data.Maybe
+import Data.Maybe (fromJust)
 import Data.Text as T (length)
 import Data.Text.Encoding (encodeUtf8)
-import Data.Time.Clock (UTCTime)
 import Text.Email.Validate
 
 import Common.Types
 import Shared
 import Uncanny.Prelude
 import User.Types
-
-validateUsername :: Maybe Username -> Either ValidationError (Maybe Username)
-validateUsername u@(Just v)
-  | l < 3     = Left $ TooShort "username" l
-  | l > 30    = Left $ TooLong "username" l
-  | otherwise = Right u
-  where
-    l = T.length . untag $ v
-validateUsername _ = Right Nothing
-
-validatePassword :: Maybe Password -> Either ValidationError (Maybe Password)
-validatePassword p@(Just v)
-  | l < 8     = Left $ TooShort "password" l
-  | l > 256   = Left $ TooLong "password" l
-  | otherwise = Right p
-  where
-    l = T.length . untag $ v
-validatePassword _ = Right Nothing
 
 validateEmail :: Maybe Email -> Either ValidationError (Maybe Email)
 validateEmail e@(Just v)
@@ -106,8 +87,8 @@ instance FromJSON UserW where
     <*> (v .: "email"     >>= vEml)
     where
       val  = either (fail . show) (pure . fromJust)
-      vUsn = val . validateUsername
-      vPwd = val . validatePassword
+      vUsn = val . validateLength (ValProps 3 30 "username")
+      vPwd = val . validateLength (ValProps 8 256 "password")
       vEml = val . validateEmail
   parseJSON _ = mzero
 
@@ -133,9 +114,10 @@ instance FromJSON UserU where
     <*> (v .:? "email"     >>= vEml)
     where
       val   = either (fail . show) pure
-      vUsn  = val . validateUsername
-      vPwd0 = either (fail . show) (pure . fromJust) . validatePassword
-      vPwd1 = val . validatePassword
+      vPass = validateLength (ValProps 8 256 "password")
+      vUsn  = val . validateLength (ValProps 3 30 "username")
+      vPwd0 = either (fail . show) (pure . fromJust) . vPass
+      vPwd1 = val . vPass
       vEml  = val . validateEmail
   parseJSON _ = mzero
 
