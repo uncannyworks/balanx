@@ -30,13 +30,14 @@ Apply: |
     ( channel_id SERIAL      PRIMARY KEY
     , name       VARCHAR     NOT NULL
     , title      VARCHAR     NULL
-    , access     INTEGER     DEFAULT 1
-    , kind       INTEGER     DEFAULT 1
+    , access     INTEGER     NOT NULL
+    , kind       INTEGER     NOT NULL
     , creator_id INTEGER     NOT NULL REFERENCES users (user_id)
     , created    TIMESTAMPTZ DEFAULT now()
     , updated    TIMESTAMPTZ DEFAULT now()
     );
   CREATE UNIQUE INDEX channels_channel_id_idx ON channels (channel_id);
+  CREATE UNIQUE INDEX channels_name_idx ON channels (name);
 
   CREATE TABLE messages
     ( message_id SERIAL      PRIMARY KEY
@@ -64,6 +65,7 @@ Revert: |
 
   DROP TABLE channels;
   DROP INDEX channels_channel_id_idx;
+  DROP INDEX channels_name_idx;
 
   DROP TABLE messages;
   DROP INDEX messages_message_id_idx;

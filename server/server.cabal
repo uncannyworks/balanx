@@ -20,7 +20,10 @@ library
                      , Api.AuthApi
                      , Api.UserApi
                      -- database
+                     , Database.Channel
+                     , Database.Message
                      , Database.User
+                     , Database.UserChannel
                      -- support
                      , Logger
                      , Session

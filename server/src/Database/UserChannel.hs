@@ -23,7 +23,7 @@ import Common.Types
 import Shared
 import Types
 import Uncanny.Prelude
-import UserChannel.Types
+import User.Types
 
 data TUserChannel
 data instance Table TUserChannel      = TUserChannel

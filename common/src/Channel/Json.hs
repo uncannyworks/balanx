@@ -59,6 +59,7 @@ data ChannelW
   { _cwName   :: Name
   , _cwTitle  :: Title
   , _cwAccess :: Access
+  , _cwKind   :: Kind
   } deriving (Show, Eq)
 
 makeLenses ''ChannelW
@@ -68,6 +69,7 @@ instance ToJSON ChannelW where
     object [ "name"   .= (c ^. cwName)
            , "title"  .= (c ^. cwTitle)
            , "access" .= (c ^. cwAccess)
+           , "kind"   .= (c ^. cwKind)
            ]
 
 instance FromJSON ChannelW where
@@ -75,4 +77,31 @@ instance FromJSON ChannelW where
     <$> v .: "name"
     <*> v .: "title"
     <*> v .: "access"
+    <*> v .: "kind"
+  parseJSON _ = mzero
+
+data ChannelU
+  = ChannelU
+  { _cuChannelId :: ChannelId
+  , _cuName      :: Maybe Name
+  , _cuTitle     :: Maybe Title
+  , _cuAccess    :: Maybe Access
+  } deriving (Show, Eq)
+
+makeLenses ''ChannelU
+
+instance ToJSON ChannelU where
+  toJSON c =
+    object [ "channel_id" .= (c ^. cuChannelId)
+           , "name"       .= (c ^. cuName)
+           , "title"      .= (c ^. cuTitle)
+           , "access"     .= (c ^. cuAccess)
+           ]
+
+instance FromJSON ChannelU where
+  parseJSON (Object v) = ChannelU
+    <$> v .:  "channel_id"
+    <*> v .:? "name"
+    <*> v .:? "title"
+    <*> v .:? "access"
   parseJSON _ = mzero
