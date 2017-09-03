@@ -130,16 +130,23 @@ channelUpdate c conn = do
   where
     upd = updName (c ^. cuName) .
           updTitle (c ^. cuTitle) .
-          updAccess (c ^. cuAccess)
+          updAccess (c ^. cuAccess) .
+          updUpdated
 
     fid :: PgR TChannel -> Kol PGBool
     fid cu = eq (kol $ c ^. cuChannelId) (#channel_id cu)
 
     updName :: Maybe Name -> PgW TChannel -> PgW TChannel
     updName (Just n) = set #name (kol n)
+    updName _ = id
 
     updTitle :: Maybe Title -> PgW TChannel -> PgW TChannel
     updTitle (Just t) = set #title (kol t)
+    updTitle _ = id
 
     updAccess :: Maybe Access -> PgW TChannel -> PgW TChannel
     updAccess (Just a) = set #access (kol a)
+    updAccess _ = id
+
+    updUpdated :: PgW TChannel -> PgW TChannel
+    updUpdated = set #updated WDef

@@ -15,10 +15,10 @@ import Uncanny.Prelude
 data MessageR
   = MessageR
   { _mrMessageId :: MessageId
-  , _mrParentId  :: ParentId
+  , _mrParentId  :: Maybe ParentId
   , _mrChannelId :: ChannelId
   , _mrCreatorId :: CreatorId
-  , _mrTitle     :: Title
+  , _mrTitle     :: Maybe Title
   , _mrMessage   :: Message
   , _mrKind      :: Kind
   , _mrCreated   :: Created
@@ -42,15 +42,15 @@ instance ToJSON MessageR where
 
 instance FromJSON MessageR where
   parseJSON (Object v) = MessageR
-    <$> v .: "channel_id"
-    <*> v .: "parent_id"
-    <*> v .: "channel_id"
-    <*> v .: "creator_id"
-    <*> v .: "title"
-    <*> v .: "message"
-    <*> v .: "kind"
-    <*> v .: "created"
-    <*> v .: "updated"
+    <$> v .:  "message_id"
+    <*> v .:? "parent_id"
+    <*> v .:  "channel_id"
+    <*> v .:  "creator_id"
+    <*> v .:? "title"
+    <*> v .:  "message"
+    <*> v .:  "kind"
+    <*> v .:  "created"
+    <*> v .:  "updated"
   parseJSON _ = mzero
 
 data MessageW
