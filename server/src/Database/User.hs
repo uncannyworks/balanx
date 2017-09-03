@@ -4,6 +4,7 @@
   , FlexibleContexts
   , FlexibleInstances
   , InstanceSigs
+  , LambdaCase
   , MultiParamTypeClasses
   , OverloadedLabels
   , ScopedTypeVariables
@@ -102,7 +103,8 @@ userWPassword u
   | otherwise = return Nothing
 
 generateToken :: MonadIO m => m Token
-generateToken = liftIO nextRandom >>= return . mkToken . toText
+generateToken =
+  liftIO nextRandom >>= return . mkToken . toText
 
 userQueryById :: UserId -> Query Db1 () (PgR TUser)
 userQueryById uid = proc () -> do
@@ -123,8 +125,10 @@ userQueryByUsernameAndToken usn tkn = proc () -> do
   restrict -< eq (#verify_t u) (kol tkn)
   returnA -< u
 
-userAuth :: (MonadIO m, MonadThrow m) =>
-            UserL -> Conn' Db1 -> m (Either QueryError (HsR TUser))
+userAuth :: (MonadIO m, MonadThrow m)
+         => UserL
+         -> Conn' Db1
+         -> m (Either QueryError (HsR TUser))
 userAuth u conn = do
   chk <- runQuery1 conn (userQueryByUsername (u ^. ulUsername))
   case chk of
@@ -134,12 +138,17 @@ userAuth u conn = do
       then return . Right $ usr
       else return . Left $ DoesNotExist
 
-userFetch :: (MonadIO m, MonadThrow m) =>
-             UserId -> Conn' Db1 -> m (Maybe (HsR TUser))
-userFetch uid conn = runQuery1 conn (userQueryById uid)
+userFetch :: (MonadIO m, MonadThrow m)
+          => UserId
+          -> Conn' Db1
+          -> m (Maybe (HsR TUser))
+userFetch uid conn =
+  runQuery1 conn (userQueryById uid)
 
-userUpdate :: (MonadIO m, MonadThrow m) =>
-              UserU -> Conn' Db1 -> m (Either QueryError ())
+userUpdate :: (MonadIO m, MonadThrow m)
+           => UserU
+           -> Conn' Db1
+           -> m (Either QueryError ())
 userUpdate u conn = do
   chk <- runQuery1 conn (userQueryById (u ^. uuUserId))
   case (chk :: Maybe (HsR TUser)) of
@@ -170,27 +179,33 @@ userUpdate u conn = do
     updEmail (Just em) = set #email (kol em)
     updEmail _ = id
 
-userInsert :: (MonadIO m, MonadThrow m) =>
-              UserW -> Conn' Db1 -> m (Either QueryError (HsR TUser))
+userInsert :: (MonadIO m, MonadThrow m)
+           => UserW
+           -> Conn' Db1
+           -> m (Either QueryError (HsR TUser))
 userInsert u conn = do
   chk <- runQuery1 conn (userQueryByUsername (u ^. uwUsername))
   case (chk :: Maybe (HsR TUser)) of
-    Just _ -> return . Left . Exists "username" $ untag (u ^. uwUsername)
+    Just _ ->
+      return . Left . Exists "username" $ untag (u ^. uwUsername)
     Nothing ->
-      userWPassword u >>= \p ->
-        case p of
-          Nothing -> return . Left $ PasswordMismatch
-          Just pw -> do
-            tn <- generateToken
-            rt <- runInsertReturning1 conn TUser id (userWToHsI pw tn u)
-            return . Right $ rt
+      userWPassword u >>= \case
+        Nothing ->
+          return . Left $ PasswordMismatch
+        Just pw -> do
+          tn <- generateToken
+          runInsertReturning1 conn TUser id (userWToHsI pw tn u) >>= return . Right
 
-userVerify :: (MonadIO m, MonadThrow m) =>
-              Username -> Token -> Conn' Db1 -> m (Either QueryError ())
+userVerify :: (MonadIO m, MonadThrow m)
+           => Username
+           -> Token
+           -> Conn' Db1
+           -> m (Either QueryError ())
 userVerify usn tkn conn = do
   chk <- runQuery1 conn (userQueryByUsernameAndToken usn tkn)
   case (chk :: Maybe (HsR TUser)) of
-    Nothing -> return . Left $ DoesNotExist
+    Nothing ->
+      return . Left $ DoesNotExist
     Just usr ->
       if view #verify_t usr == tkn
       then runUpdate conn TUser upd (fid $ view #user_id usr) >> return (Right ())
